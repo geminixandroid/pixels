@@ -27,9 +27,8 @@ export default defineEventHandler((event) => {
   // @ts-expect-error private method
   io = new Server(event.node.res.socket?.server)
 
-  io!.on('connection', (socket: Socket) => {
+  io?.on('connection', (socket: Socket) => {
     socket.on('initMe', (id: string) => {
-      console.warn('initMe', id)
       io?.to(id).emit('init', pixelsData)
     })
 

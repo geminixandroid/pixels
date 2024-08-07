@@ -6,10 +6,6 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'node-server',
   },
-  sourcemap: {
-    server: true,
-    client: true,
-  },
   runtimeConfig: {
     port: 3001,
   },
