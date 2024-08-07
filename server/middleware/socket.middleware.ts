@@ -28,7 +28,10 @@ export default defineEventHandler((event) => {
   io = new Server(event.node.res.socket?.server)
 
   io!.on('connection', (socket: Socket) => {
-    io?.emit('init', pixelsData)
+    socket.on('initMe', (id: string) => {
+      console.warn('initMe', id)
+      io?.to(id).emit('init', pixelsData)
+    })
 
     socket.on('click', ({ x, y, color }: IPixel) => {
       const storedPixel = pixelsData[y][x]

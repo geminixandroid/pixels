@@ -13,6 +13,7 @@ yarn-error.log*
 
 # nuxt.js build output
 .nuxt
+.output
 
 # Nuxt generate
 dist

@@ -1,0 +1,8 @@
+SetEnv GHOST_NODE_VERSION_CHECK false
+PassengerStartupFile server.js
+PassengerStickySessions on
+PassengerResolveSymlinksInDocumentRoot on
+Require all granted
+PassengerAppType node
+PassengerAppRoot /home/a0131706/domains/geminixandroid.com/public_html/pixels/
+Options -MultiViews

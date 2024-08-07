@@ -21,19 +21,30 @@
   </div>
 </template>
 <script setup lang="ts">
-import { socket } from '~/components/socket'
 import type { IPixel } from './shared/viewModel/iPixel'
-
+import { io, Socket } from 'socket.io-client'
 let currentColor = '#000000'
 
 const pixels: Ref<IPixel[][]> = ref([])
+let socket: Socket
 
-socket.on('disconnect', () => {
-  pixels.value = []
+onMounted(() => {
+  socket = io({ transports: ['polling'] })
+
+  socket.on('connect', () => {
+    socket.emit('initMe', socket.id)
+  })
+  socket.on('disconnect', () => {
+    pixels.value = []
+  })
+
+  socket.on('connect_error', () => {
+    socket.io.opts.transports = ['polling', 'websocket']
+  })
+
+  socket.on('init', onInit)
+  socket.on('click', onClick)
 })
-
-socket.on('init', onInit)
-socket.on('click', onClick)
 
 function click(pixel: IPixel) {
   socket.emit('click', <IPixel>{
