@@ -1,7 +1,21 @@
 import { Socket, Server } from 'socket.io'
 import type { IPixel } from '~/shared/viewModel/iPixel'
+import fs from 'fs'
 
 let io: Server | null
+const fileName = 'pixels.json'
+
+if (!fs.existsSync(fileName)) {
+  fs.writeFileSync(fileName, JSON.stringify(generatePixels(100, 100)))
+}
+
+const pixelsData = JSON.parse(
+  fs.readFileSync(fileName, { encoding: 'utf8', flag: 'r' }).toString()
+) as IPixel[][]
+
+process.on('exit', () => {
+  fs.writeFileSync(fileName, JSON.stringify(pixelsData))
+})
 
 function generatePixels(rows: number, columns: number): IPixel[][] {
   const arr: IPixel[][] = []
@@ -18,8 +32,6 @@ function generatePixels(rows: number, columns: number): IPixel[][] {
 
   return arr
 }
-
-const pixelsData: IPixel[][] = generatePixels(100, 100)
 
 export default defineEventHandler((event) => {
   if (io) return
@@ -38,7 +50,7 @@ export default defineEventHandler((event) => {
 
       storedPixel.color = color
 
-      io!.emit('click', storedPixel)
+      io?.emit('click', storedPixel)
     })
 
     socket.on('disconnect', () => {})
