@@ -1,5 +1,7 @@
 <template>
-  <div>Header</div>
+  <div style="text-align: center; padding-bottom: 12px">
+    <a href="mailto:geminixandroid@gmail.com">geminixandroid@gmail.com</a>
+  </div>
   <div class="layout">
     <div class="palette">
       <input type="color" id="html5colorpicker" v-model="currentColor" />
@@ -20,33 +22,17 @@
 </template>
 <script setup lang="ts">
 import { socket } from '~/components/socket'
-
-interface IPixel {
-  x: number
-  y: number
-  color: string
-}
+import type { IPixel } from './shared/viewModel/iPixel'
 
 let currentColor = '#000000'
 
-const pixels = ref(generatePixels(100, 100))
+const pixels: Ref<IPixel[][]> = ref([])
 
-function generatePixels(rows: number, columns: number): IPixel[][] {
-  const arr: IPixel[][] = []
-  for (let y = 0; y < rows; y++) {
-    arr[y] = []
-    for (let x = 0; x < columns; x++) {
-      arr[y][x] = {
-        x,
-        y,
-        color: '#fafafa',
-      }
-    }
-  }
+socket.on('disconnect', () => {
+  pixels.value = []
+})
 
-  return arr
-}
-
+socket.on('init', onInit)
 socket.on('click', onClick)
 
 function click(pixel: IPixel) {
@@ -54,6 +40,10 @@ function click(pixel: IPixel) {
     ...pixel,
     color: currentColor,
   })
+}
+
+function onInit(initData: IPixel[][]) {
+  pixels.value.push(...initData)
 }
 
 function onClick(pixel: IPixel) {

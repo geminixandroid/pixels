@@ -11,6 +11,12 @@ yarn-error.log*
 # Editor settings
 .vscode
 
+# nuxt.js build output
+.nuxt
+
+# Nuxt generate
+dist
+
 # Yarn
 .yarn/*
 !.yarn/patches
