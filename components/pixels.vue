@@ -1,26 +1,25 @@
 <template>
-  <div class="layout">
-    <div class="palette">
-      <input type="color" id="html5colorpicker" v-model="currentColor" />
-    </div>
-    <div class="canvas">
-      <div v-for="(row, index1) in pixels">
-        <div v-for="(pixel, index2) in row">
-          <div
-            class="pixel"
-            :key="`${index1}-${index2}`"
-            @click="click(pixel)"
-            :style="`background-color: ${pixel.color}`"
-          ></div>
-        </div>
-      </div>
-    </div>
+  <div class="picker">
+    <input type="color" id="html5colorpicker" v-model="currentColor" />
   </div>
+  <table class="table">
+    <tr v-for="(row, y) in pixels">
+      <td v-for="(pixel, x) in row">
+        <div
+          class="pixel"
+          :key="`${x}-${y}`"
+          :id="`${x}-${y}`"
+          @click="click(pixel)"
+          :style="`background-color: ${pixel.color}`"
+        ></div>
+      </td>
+    </tr>
+  </table>
 </template>
 <script setup lang="ts">
 import { io } from 'socket.io-client'
 import type { IPixel } from '~/shared/viewModel/iPixel'
-const socket = io({ transports: ['polling'] })
+const socket = io({ transports: ['websocket'] })
 const pixels: Ref<IPixel[][]> = ref([])
 let currentColor = '#000000'
 
@@ -33,7 +32,7 @@ onMounted(() => {
   })
 
   socket.on('connect_error', () => {
-    socket.io.opts.transports = ['polling', 'websocket']
+    socket.io.opts.transports = ['polling']
   })
 
   socket.on('init', onInit)
@@ -58,27 +57,37 @@ function onClick(pixel: IPixel) {
 }
 </script>
 <style scoped="true">
+.picker {
+  text-align: center;
+  padding: 16px;
+}
 .pixel {
   width: 16px;
   height: 16px;
-  float: left;
   box-sizing: border-box;
-  border: 1px solid #d4d4d4;
 }
 
 .pixel:hover {
   border: 1px solid #b31515;
 }
 
-.layout {
-  display: flex;
+.table {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
 }
 
-.palette {
-  padding: 32px;
+td {
+  padding: 0;
+  border: 1px solid #d0d0d0;
 }
 
-.canvas {
-  display: flex;
+.table td:nth-child(10n) {
+  border-right-color: #b0b0b0;
+}
+
+.table tr:nth-child(10n) td {
+  border-bottom-color: #b0b0b0;
 }
 </style>
