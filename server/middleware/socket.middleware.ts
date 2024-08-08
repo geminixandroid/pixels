@@ -13,9 +13,11 @@ const pixelsData = JSON.parse(
   fs.readFileSync(fileName, { encoding: 'utf8', flag: 'r' }).toString()
 ) as IPixel[][]
 
-process.on('exit', () => {
+process.on('exit', () => saveData())
+
+function saveData() {
   fs.writeFileSync(fileName, JSON.stringify(pixelsData))
-})
+}
 
 function generatePixels(rows: number, columns: number): IPixel[][] {
   const arr: IPixel[][] = []
@@ -39,6 +41,8 @@ export default defineEventHandler((event) => {
   // @ts-expect-error private method
   io = new Server(event.node.res.socket?.server)
 
+  io?.on('connection_error', () => saveData())
+
   io?.on('connection', (socket: Socket) => {
     socket.on('initMe', (id: string) => {
       io?.to(id).emit('init', pixelsData)
@@ -53,6 +57,6 @@ export default defineEventHandler((event) => {
       io?.emit('click', storedPixel)
     })
 
-    socket.on('disconnect', () => {})
+    socket.on('disconnect', () => saveData())
   })
 })
