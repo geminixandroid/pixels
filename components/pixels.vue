@@ -39,12 +39,12 @@ socket.on('init', onInit)
 socket.on('click', onClick)
 
 function click(pixel: IPixel) {
-  if (pixel.color === currentColor) return
-
-  socket.emit('click', <IPixel>{
+  const newPixel: IPixel = {
     ...pixel,
-    color: currentColor,
-  })
+    color: pixel.color === currentColor ? '#ffffff' : currentColor,
+  }
+
+  socket.emit('click', newPixel)
 }
 
 function onInit(initData: IPixel[][]) {
