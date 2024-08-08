@@ -19,26 +19,24 @@
 <script setup lang="ts">
 import { io } from 'socket.io-client'
 import type { IPixel } from '~/shared/viewModel/iPixel'
-const socket = io({ transports: ['websocket'] })
+const socket = io({ transports: ['polling'] })
 const pixels: Ref<IPixel[][]> = ref([])
 let currentColor = '#000000'
 
-onMounted(() => {
-  socket.on('connect', () => {
-    socket.emit('initMe', socket.id)
-  })
-  socket.on('disconnect', () => {
-    pixels.value = []
-  })
-
-  socket.on('connect_error', () => {
-    socket.io.opts.transports = ['polling']
-  })
-
-  socket.on('init', onInit)
-
-  socket.on('click', onClick)
+socket.on('connect', () => {
+  socket.emit('initMe', socket.id)
 })
+socket.on('disconnect', () => {
+  pixels.value = []
+})
+
+socket.on('connect_error', () => {
+  socket.io.opts.transports = ['websocket, polling']
+})
+
+socket.on('init', onInit)
+
+socket.on('click', onClick)
 
 function click(pixel: IPixel) {
   if (pixel.color === currentColor) return
