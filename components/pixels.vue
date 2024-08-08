@@ -41,6 +41,8 @@ onMounted(() => {
 })
 
 function click(pixel: IPixel) {
+  if (pixel.color === currentColor) return
+
   socket.emit('click', <IPixel>{
     ...pixel,
     color: currentColor,
@@ -61,6 +63,7 @@ function onClick(pixel: IPixel) {
   text-align: center;
   padding: 16px;
 }
+
 .pixel {
   width: 16px;
   height: 16px;
